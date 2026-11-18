@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '1.2.0';
+  const APP_VERSION = '1.3.0';
 
   // ---------- 状态 ----------
   const state = {
@@ -63,6 +63,75 @@
 
   function setBtn(el, iconBody, label) {
     el.innerHTML = svgIcon(iconBody, 'icon btn-icon') + `<span>${esc(label)}</span>`;
+  }
+
+
+  const SHOP_PLATFORMS = {
+    taobao: { label: '淘宝', button: '去淘宝看看', share: '可在淘宝打开' },
+    jd: { label: '京东', button: '去京东看看', share: '可在京东打开' },
+    pdd: { label: '拼多多', button: '去拼多多看看', share: '可在拼多多打开' }
+  };
+
+  function safeHttpUrl(url) {
+    try {
+      const u = new URL(String(url || '').trim());
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+    } catch (e) { /* 非法地址 */ }
+    return '';
+  }
+
+  /** 仅当平台合法且有官方 http(s) 商品链接时返回商店信息，否则返回 null */
+  function normalizeShop(shop) {
+    if (!shop || typeof shop !== 'object') return null;
+    const url = safeHttpUrl(shop.url);
+    const meta = SHOP_PLATFORMS[shop.platform];
+    if (!url || !meta) return null;
+    const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
+    const out = { platform: shop.platform, url };
+    const name = str(shop.shopName, 40);
+    const title = str(shop.productTitle, 80);
+    const price = str(shop.priceText, 20);
+    const itemId = str(shop.itemId, 40);
+    if (name) out.shopName = name;
+    if (title) out.productTitle = title;
+    if (price) out.priceText = price;
+    if (itemId) out.itemId = itemId;
+    return out;
+  }
+
+  function parcelChipText(shop) {
+    const s = normalizeShop(shop);
+    if (!s) return '';
+    const label = SHOP_PLATFORMS[s.platform].label;
+    return s.shopName ? `包裹来自 ${label} · ${s.shopName}` : `包裹来自 ${label}`;
+  }
+
+  function fillParcelChip(el, shop) {
+    if (!el) return;
+    const text = parcelChipText(shop);
+    el.hidden = !text;
+    el.textContent = text;
+  }
+
+  function renderShopCard(el, shop) {
+    if (!el) return;
+    const s = normalizeShop(shop);
+    if (!s) {
+      el.hidden = true;
+      el.innerHTML = '';
+      el.classList.remove('visible');
+      return;
+    }
+    const meta = SHOP_PLATFORMS[s.platform];
+    const priceLine = s.priceText
+      ? `参考价 ${esc(s.priceText)}，以商店页面为准`
+      : '价格以商店页面为准';
+    el.hidden = false;
+    el.innerHTML =
+      '<div class="shop-label">商店包裹</div>' +
+      (s.productTitle ? `<div class="shop-product">${esc(s.productTitle)}</div>` : '') +
+      `<div class="shop-price">${priceLine}</div>` +
+      `<a class="btn btn-ghost shop-link" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(meta.button)}</a>`;
   }
 
   function iconForRecord(r, cls) {
@@ -361,12 +430,14 @@
       note: pack.note || null,
       style: pack.style || '',
       favorited: false,
-      materialVersion: '1.0'
+      materialVersion: '1.3.0',
+      shop: normalizeShop(gift.shop)
     };
     state.currentGift.record = record;
 
     $('#reveal-icon').innerHTML = giftIconSvg(gift.id, 'icon');
     $('#reveal-name').textContent = gift.name;
+    fillParcelChip($('#reveal-parcel'), record.shop);
     $('#reveal-theme').textContent = (gift.themes || []).join(' · ') || gift.category;
     $('#reveal-card-title').textContent = pack.cardTitle;
     $('#reveal-message').textContent = pack.message;
@@ -374,12 +445,13 @@
     const noteLayer = $('#layer-note');
     noteLayer.hidden = !pack.note;
     $('#reveal-note').textContent = pack.note || '';
+    renderShopCard($('#layer-shop'), record.shop);
 
     $('#reveal-meta').textContent = `${state.taName || 'TA'} → ${state.userName || '你'} · ${state.selectedMood} · ${formatTime(record.timestamp)}`;
     setFavBtn($('#btn-favorite'), false);
     $('#btn-favorite').dataset.id = record.id;
 
-    ['layer-gift', 'layer-card', 'layer-note'].forEach(id => $('#' + id).classList.remove('visible'));
+    ['layer-gift', 'layer-card', 'layer-note', 'layer-shop'].forEach(id => $('#' + id).classList.remove('visible'));
     // 用 replace：返回键不会回到拆礼动画
     showScreen('reveal', { replace: true });
 
@@ -387,6 +459,7 @@
     setTimeout(() => $('#layer-gift').classList.add('visible'), 80 * d);
     setTimeout(() => $('#layer-card').classList.add('visible'), 380 * d);
     if (pack.note) setTimeout(() => $('#layer-note').classList.add('visible'), 680 * d);
+    if (record.shop) setTimeout(() => $('#layer-shop').classList.add('visible'), (pack.note ? 900 : 680) * d);
 
     try {
       await saveGift(record);
@@ -433,7 +506,7 @@
 
     const q = state.searchQuery.trim().toLowerCase();
     if (q) {
-      list = list.filter(g => [g.giftName, g.cardTitle, g.message, g.note, g.category, g.mood, (g.themes || []).join(' ')]
+      list = list.filter(g => [g.giftName, g.cardTitle, g.message, g.note, g.category, g.mood, (g.themes || []).join(' '), g.shop && g.shop.shopName, g.shop && g.shop.productTitle]
         .some(v => (v || '').toLowerCase().includes(q)));
     }
 
@@ -456,6 +529,7 @@
         <span class="item-icon">${iconForRecord(g, 'icon')}</span>
         <span class="item-info">
           <span class="item-name">${esc(g.giftName)}</span>
+          ${parcelChipText(g.shop) ? `<span class="item-parcel">${esc(parcelChipText(g.shop))}</span>` : ''}
           <span class="item-title">${esc(g.cardTitle)}</span>
           <span class="item-meta">${esc(g.mood || '')} · ${esc(formatTime(g.timestamp))}</span>
         </span>
@@ -479,12 +553,15 @@
     state.viewingId = id;
     $('#detail-icon').innerHTML = iconForRecord(g, 'icon');
     $('#detail-name').textContent = g.giftName;
+    fillParcelChip($('#detail-parcel'), g.shop);
     $('#detail-theme').textContent = (g.themes || []).join(' · ') || g.category || '';
     $('#detail-card-title').textContent = g.cardTitle;
     $('#detail-message').textContent = g.message;
     const noteWrap = $('#detail-note-wrap');
     noteWrap.hidden = !g.note;
     $('#detail-note').textContent = g.note || '';
+    renderShopCard($('#detail-shop'), g.shop);
+    if (g.shop) $('#detail-shop').classList.add('visible');
     $('#detail-meta').textContent = `${g.taName || 'TA'} → ${g.userName || '你'} · ${g.mood || ''} · ${formatTime(g.timestamp)}`;
     setFavBtn($('#btn-detail-fav'), !!g.favorited);
     return true;
@@ -554,7 +631,8 @@
     m.font = `600 42px ${FONT}`;
     const titleLines = wrapLines(m, record.cardTitle, INNER - 80);
 
-    const cardTop = 600;
+    const shop = normalizeShop(record.shop);
+    const cardTop = shop ? 650 : 600;
     const cardH = 80 + titleLines.length * 58 + 40 + msgLines.length * 66 + 24;
     const noteH = noteLines.length ? 90 + noteLines.length * 50 + 40 : 0;
     const needH = cardTop + cardH + (noteH ? noteH + 40 : 0) + 230;
@@ -618,6 +696,11 @@
     ctx.fillStyle = '#c9a84c';
     ctx.font = `600 46px ${FONT}`;
     ctx.fillText(record.giftName || '', W / 2, 545);
+    if (shop) {
+      ctx.fillStyle = 'rgba(232,213,163,0.75)';
+      ctx.font = `26px ${FONT}`;
+      ctx.fillText(SHOP_PLATFORMS[shop.platform].share, W / 2, 592);
+    }
 
     // 卡片
     ctx.fillStyle = 'rgba(232,228,217,0.06)';
@@ -666,7 +749,7 @@
     ctx.fillText(`${record.taName || 'TA'} → ${record.userName || '你'}  ·  ${record.mood || ''}  ·  ${formatTime(record.timestamp).slice(0, 10)}`, W / 2, H - 150);
     ctx.fillStyle = 'rgba(160,154,138,0.6)';
     ctx.font = `24px ${FONT}`;
-    ctx.fillText('数字象征性礼物 · 仅供收藏', W / 2, H - 104);
+    ctx.fillText(shop ? `数字象征性礼物 · ${SHOP_PLATFORMS[shop.platform].share}` : '数字象征性礼物 · 仅供收藏', W / 2, H - 104);
     return canvas;
   }
 

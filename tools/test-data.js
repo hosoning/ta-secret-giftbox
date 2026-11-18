@@ -103,6 +103,46 @@ for (const g of GIFTS) {
 }
 check('no forbidden slogan phrases', sloganHits.length === 0, sloganHits.slice(0, 8).join(' | '));
 
+const PLATFORMS = new Set(['taobao', 'jd', 'pdd']);
+const shoppable = [];
+const handmade = [];
+const badShop = [];
+for (const g of GIFTS) {
+  const shop = g.shop;
+  if (shop == null) {
+    handmade.push(g.id);
+    continue;
+  }
+  shoppable.push(g.id);
+  if (typeof shop !== 'object') {
+    badShop.push(`${g.id}: shop is not an object`);
+    continue;
+  }
+  if (!shop.url || !String(shop.url).trim()) {
+    badShop.push(`${g.id}: empty or missing shop.url`);
+    continue;
+  }
+  if (!/^https?:\/\//i.test(String(shop.url))) {
+    badShop.push(`${g.id}: shop.url is not http(s)`);
+  }
+  if (!PLATFORMS.has(shop.platform)) {
+    badShop.push(`${g.id}: platform ${shop.platform}`);
+  }
+}
+check('handmade gifts have no shop button data', handmade.every((id) => {
+  const g = GIFTS.find((x) => x.id === id);
+  return !g.shop || !g.shop.url;
+}), handmade.join(','));
+check('every shoppable gift has a valid shop.url and platform', badShop.length === 0, badShop.slice(0, 8).join(' | '));
+check('shoppable count in range 28–35', shoppable.length >= 28 && shoppable.length <= 35, String(shoppable.length));
+check('handmade count in range 8–12', handmade.length >= 8 && handmade.length <= 13, String(handmade.length));
+
+const surprise = coverage['想要惊喜'] || [];
+const surpriseShop = surprise.filter((id) => shoppable.includes(id));
+const surpriseHand = surprise.filter((id) => handmade.includes(id));
+check('想要惊喜 has a handmade + shop mix', surpriseShop.length >= 3 && surpriseHand.length >= 3, `shop ${surpriseShop.length} / handmade ${surpriseHand.length}`);
+
 console.log(results.join('\n'));
+console.log(`\nshoppable ${shoppable.length} · handmade ${handmade.length}`);
 console.log(`\n${results.filter((r) => r.startsWith('PASS')).length}/${results.length} passed`);
 if (failed) process.exit(1);

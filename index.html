@@ -44,7 +44,7 @@
       <button type="button" class="btn btn-text hidden" id="btn-install">添加到手机桌面</button>
     </div>
     <p class="disclaimer">
-      本站为数字象征性互动体验，所有礼物均为虚拟内容，不涉及真实物品寄送或消费。
+      本站为数字象征性互动体验，不代为寄送或下单。部分礼物附有淘宝、京东或拼多多的商品参考链接，价格为参考价，以商店页面为准。本站与上述平台无官方合作。
     </p>
   </section>
 
@@ -102,6 +102,7 @@
       <div class="layer layer-gift" id="layer-gift">
         <span class="gift-icon-large" id="reveal-icon"></span>
         <h2 class="gift-name" id="reveal-name" tabindex="-1">礼物名称</h2>
+        <p class="parcel-chip" id="reveal-parcel" hidden></p>
         <div class="gift-theme" id="reveal-theme"></div>
       </div>
       <div class="layer layer-card" id="layer-card">
@@ -112,6 +113,7 @@
         <div class="note-label">附上的小纸条</div>
         <div class="note-text" id="reveal-note"></div>
       </div>
+      <div class="layer layer-shop" id="layer-shop" hidden></div>
     </div>
     <div class="reveal-meta" id="reveal-meta"></div>
     <div class="reveal-actions">
@@ -154,7 +156,7 @@
     <input type="file" id="import-file" accept=".json,application/json" hidden />
     <p class="storage-notice">
       礼物记录保存在本设备浏览器中。清除浏览器数据、使用无痕模式或更换设备可能导致丢失，请及时导出备份。<br>
-      所有礼物均为数字象征性内容，不涉及真实物品寄送。
+      拆礼仍是数字象征性体验，本站不寄送实物、也不代为下单。部分礼物附有商店参考链接，价格以商店页面为准。
     </p>
   </section>
 
@@ -167,6 +169,7 @@
       <div class="layer layer-gift visible">
         <span class="gift-icon-large" id="detail-icon"></span>
         <h2 class="gift-name" id="detail-name" tabindex="-1"></h2>
+        <p class="parcel-chip" id="detail-parcel" hidden></p>
         <div class="gift-theme" id="detail-theme"></div>
       </div>
       <div class="layer layer-card visible">
@@ -177,6 +180,7 @@
         <div class="note-label">附上的小纸条</div>
         <div class="note-text" id="detail-note"></div>
       </div>
+      <div class="layer layer-shop visible" id="detail-shop" hidden></div>
     </div>
     <div class="reveal-meta" id="detail-meta"></div>
     <div class="reveal-actions">

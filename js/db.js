@@ -140,6 +140,26 @@ async function exportAll() {
   };
 }
 
+
+/** 导入时保留商店字段；无效或缺失则省略，旧记录不会出现商店按钮 */
+function sanitizeShop(shop) {
+  if (!shop || typeof shop !== 'object') return null;
+  const url = String(shop.url || '').trim();
+  if (!/^https?:\/\//i.test(url)) return null;
+  if (!['taobao', 'jd', 'pdd'].includes(shop.platform)) return null;
+  const str = (v, max) => (v == null ? '' : String(v)).trim().slice(0, max);
+  const out = { platform: shop.platform, url: str(url, 400) };
+  const name = str(shop.shopName, 40);
+  const title = str(shop.productTitle, 80);
+  const price = str(shop.priceText, 20);
+  const itemId = str(shop.itemId, 40);
+  if (name) out.shopName = name;
+  if (title) out.productTitle = title;
+  if (price) out.priceText = price;
+  if (itemId) out.itemId = itemId;
+  return out;
+}
+
 /** 校验并规范化一条导入的礼物记录，无效返回 null */
 function normalizeGiftRecord(g) {
   if (!g || typeof g !== 'object') return null;
@@ -149,7 +169,7 @@ function normalizeGiftRecord(g) {
   const ts = typeof g.timestamp === 'number' ? g.timestamp : Date.parse(g.timestamp);
   if (!isFinite(ts)) return null;
   const str = (v, max) => (v == null ? '' : String(v)).slice(0, max);
-  return {
+  const rec = {
     id: str(g.id, 80),
     timestamp: ts,
     userName: str(g.userName, 24),
@@ -167,6 +187,9 @@ function normalizeGiftRecord(g) {
     favorited: !!g.favorited,
     materialVersion: str(g.materialVersion || '1.0', 10)
   };
+  const shop = sanitizeShop(g.shop);
+  if (shop) rec.shop = shop;
+  return rec;
 }
 
 /**

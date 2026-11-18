@@ -3,6 +3,21 @@
  * 每套内容：礼物 + 卡片标题 + 完整留言，语义绑定，不可随机混搭
  * 所有第三人称使用「TA」
  * 礼物可带 tease：拆盒时在真名出现前短暂显示（跳过动画 / 减少动态时不显示）
+ *
+ * shop 字段（可选）：给礼物附上真实商店的商品链接，拆开后显示「包裹」卡片和跳转按钮。
+ * 本站是静态页面，不能接入淘宝 / 京东 / 拼多多的登录、下单或官方 SDK。
+ * 买家购入本站后，只需改本文件里对应礼物的 shop.url、shopName、productTitle、priceText 等字段，
+ * 即可换成自己的商品链接。保持静态配置即可，不需要后端。
+ *
+ * shop: {
+ *   platform: "taobao" | "jd" | "pdd",   // 天猫商品也归在 taobao
+ *   shopName: "店铺名称（页面上能看到的）",
+ *   productTitle: "商品标题",
+ *   url: "官方商品详情页，不要用搜索页或短链",
+ *   priceText: "参考价，如 ¥29.9（会过期；没有就省略，不要编造）",
+ *   itemId: "可选，商品 ID"
+ * }
+ * 手作 / 非卖品请省略 shop，或设为 null。这类礼物拆开后不会出现商店按钮。
  */
 
 const GIFTS = [
@@ -14,6 +29,13 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "想念 TA", "需要鼓励"],
     icon: "🧣",
     tease: "盒子扁扁的，还以为是文件",
+    shop: {
+      platform: "jd",
+      shopName: "玖慕京东自营旗舰店",
+      productTitle: "玖慕山羊绒围巾",
+      url: "https://item.jd.com/100039455793.html",
+      itemId: "100039455793"
+    },
     packs: [
       {
         cardTitle: "天桥上那阵风还在",
@@ -44,23 +66,30 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "想要惊喜", "想念 TA", "想庆祝"],
     icon: "💐",
     tease: "有一点叶子的味道漏出来了",
+    shop: {
+      platform: "jd",
+      shopName: "阿宝丽",
+      productTitle: "迷你小花束口袋永生仿真花",
+      url: "https://item.jd.com/100137412150.html",
+      itemId: "100137412150"
+    },
     packs: [
       {
         cardTitle: "今天不是什么节日",
         message: "店员问我送谁、过什么日子，我答得有点慢。其实没有日子，只是这束花在桶里歪着，像在等人把它扶正。颜色不艳，香味也不抢。放到你桌上时，记得把包装纸解开，让它自己站一会儿。",
-        note: "水先换一次。花会慢慢低头，低头也不算结束。",
+        note: "包装纸解开以后再放桌面。叶子不会马上塌，塌了也不算结束。",
         style: "温柔"
       },
       {
         cardTitle: "路过就带走了",
-        message: "我本来只是等红绿灯。花店的灯先亮了，这束花靠在玻璃上，叶子还带着水。于是红灯还没完，它已经在我手里。没有精心挑选的故事，只有一个不想空手经过你的下午。",
+        message: "我本来只是等红绿灯。花店的灯先亮了，这束花靠在玻璃上，叶子还亮着。于是红灯还没完，它已经在我手里。没有精心挑选的故事，只有一个不想空手经过你的下午。",
         note: null,
         style: "克制"
       },
       {
         cardTitle: "让桌面先亮一下",
         message: "我知道你桌上堆着充电器、杯子和一张皱掉的收据。这束花会有点占地方。占就占吧。希望你坐下打开灯的时候，第一眼不是待办，是这一点颜色。嘴角要是抬一下，这束花就算完成工作了。",
-        note: "枯了的时候别立刻扔，夹一朵在书里也可以。",
+        note: "占地方就占吧。哪天挪走，折一朵叶子夹进书里也可以。",
         style: "俏皮"
       }
     ]
@@ -74,6 +103,7 @@ const GIFTS = [
     moods: ["想去约会", "普通的一天", "想念 TA", "想要惊喜", "想庆祝"],
     icon: "🎫",
     tease: "薄得像两张纸",
+    shop: null,
     packs: [
       {
         cardTitle: "片名先空着",
@@ -98,29 +128,35 @@ const GIFTS = [
 
   {
     id: "hot_cocoa",
-    name: "一杯顶上有裂痕的热可可",
+    name: "一盒可以自己冲开的热可可",
     category: "饮品",
     themes: ["关心", "日常", "鼓励"],
     moods: ["普通的一天", "想被关心", "需要鼓励", "想念 TA"],
     icon: "☕",
-    tease: "盒子有点温",
+    tease: "盒子里有几条小小的包装",
+    shop: {
+      platform: "jd",
+      productTitle: "艺佰未碱化天然可可粉 30条装",
+      url: "https://item.jd.com/100231052171.html",
+      itemId: "100231052171"
+    },
     packs: [
       {
         cardTitle: "先把杯子握住",
-        message: "不管你刚才在忙什么，先把手放到这杯热的上面。可可的甜不重，顶上那层泡沫有一道浅浅的裂，像被人轻轻吹过。吹过的人是我。喝第一口的时候可能会烫，第二口就刚好。刚好的那口，留给你站着或坐着的三十秒。",
-        note: "小心杯沿。托盘我垫了纸巾，洒了也不算事故。",
+        message: "不管你刚才在忙什么，先烧一点水，把其中一条倒进杯子。可可的甜不重，冲开以后顶上会有一层浅浅的沫。第一口可能会烫，第二口就刚好。刚好的那口，留给你站着或坐着的三十秒。其他几条留给以后同样需要热气的晚上。",
+        note: "水不要倒满。留一点沿，洒了也不算事故。",
         style: "温柔"
       },
       {
         cardTitle: "配方很普通，温度是认真的",
-        message: "没有隐藏技巧，就是普通的热可可。我把温度试过，试到自己能连续喝两口的程度。它可以陪你坐一会儿，不用赶着做下一件事。杯子空了以后，圈会留在桌上。圈也算我来过。",
+        message: "没有隐藏技巧，就是普通的热可可粉。我按袋上的比例试过，试到自己能连续喝两口的程度。它可以陪你坐一会儿，可以不赶下一件事。杯子空了以后，圈会留在桌上。圈也算我来过。",
         note: null,
         style: "克制"
       },
       {
         cardTitle: "天冷就喝这个",
-        message: "我不太会煮复杂的东西，但这杯是认真给你的。甜度按你上次说「再淡一点」往下调了。喝完再继续忙，也行；喝完把灯关掉，也行。总之先让舌头回到一个温暖的地方。",
-        note: "旁边那块饼干是附加的。可可以把它蘸软。",
+        message: "我不太会煮复杂的东西，但这一盒是认真给你的。想淡一点就多加点水。喝完再继续忙，也行；喝完把灯关掉，也行。总之先让舌头回到一个温暖的地方。袋子收好，下次冷的晚上还在。",
+        note: "旁边要是有饼干，可以把它蘸软。",
         style: "直接"
       }
     ]
@@ -134,6 +170,7 @@ const GIFTS = [
     moods: ["想念 TA", "想被关心", "普通的一天", "需要鼓励"],
     icon: "✉️",
     tease: "还以为是快递单",
+    shop: null,
     packs: [
       {
         cardTitle: "落笔前删过三句",
@@ -164,6 +201,13 @@ const GIFTS = [
     moods: ["普通的一天", "需要鼓励", "想念 TA", "想被关心"],
     icon: "📖",
     tease: "边角已经有点软了",
+    shop: {
+      platform: "jd",
+      shopName: "京东图书",
+      productTitle: "鲁迅《野草集》精读新版",
+      url: "https://item.jd.com/15136360.html",
+      itemId: "15136360"
+    },
     packs: [
       {
         cardTitle: "我先折了一个角",
@@ -194,10 +238,17 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励", "想去约会"],
     icon: "🍵",
     tease: "几袋在里面轻轻滑动",
+    shop: {
+      platform: "jd",
+      shopName: "魏茶师京东自营旗舰店",
+      productTitle: "魏茶师小泡袋",
+      url: "https://item.jd.com/100143565206.html",
+      itemId: "100143565206"
+    },
     packs: [
       {
         cardTitle: "从我那个罐子里拿出的",
-        message: "这几袋不是新买的礼盒，是从我自己的罐子里分出来的。分的时候我数了两遍，生怕给少。气味很淡，泡的时间可以随你。第一泡如果嫌淡，就再坐一会儿。茶会等，像我有时也会在杯子旁边等你回一句话。",
+        message: "这几袋是我买回来以后，从自己的罐子里分出来的。分的时候我数了两遍，生怕给少。气味很淡，泡的时间可以随你。第一泡如果嫌淡，就再坐一会儿。茶会等，像我有时也会在杯子旁边等你回一句话。",
         note: "标签上的字被我油手摸花了一点。花了也能认。",
         style: "温柔"
       },
@@ -224,6 +275,12 @@ const GIFTS = [
     moods: ["普通的一天", "需要鼓励", "想念 TA", "想要惊喜", "想去约会"],
     icon: "🎧",
     tease: "这条线是绕好的",
+    shop: {
+      platform: "jd",
+      productTitle: "索爱 E18 半入耳式有线耳机",
+      url: "https://item.jd.com/100167497098.html",
+      itemId: "100167497098"
+    },
     packs: [
       {
         cardTitle: "左耳是我听过的",
@@ -254,6 +311,13 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励", "想念 TA"],
     icon: "🌙",
     tease: "等等，这个形状……",
+    shop: {
+      platform: "jd",
+      shopName: "美的智能家居京东自营旗舰店",
+      productTitle: "美的 LED 卧室小夜灯",
+      url: "https://item.jd.com/100017912070.html",
+      itemId: "100017912070"
+    },
     packs: [
       {
         cardTitle: "只照到拖鞋那一块",
@@ -284,6 +348,7 @@ const GIFTS = [
     moods: ["想念 TA", "普通的一天", "想要惊喜", "想去约会"],
     icon: "✉️",
     tease: "一张几乎没有厚度的东西",
+    shop: null,
     packs: [
       {
         cardTitle: "字写到快要出界",
@@ -314,6 +379,12 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "想念 TA", "想去约会", "想要惊喜"],
     icon: "🔑",
     tease: "有金属轻轻碰了一下",
+    shop: {
+      platform: "jd",
+      productTitle: "博友真皮双环钥匙扣",
+      url: "https://item.jd.com/10065297421315.html",
+      itemId: "10065297421315"
+    },
     packs: [
       {
         cardTitle: "店门口那串风的声音",
@@ -344,6 +415,13 @@ const GIFTS = [
     moods: ["想要惊喜", "想被关心", "普通的一天", "需要鼓励", "想庆祝"],
     icon: "🍫",
     tease: "拆开前先别摇",
+    shop: {
+      platform: "jd",
+      shopName: "德芙京东自营专区",
+      productTitle: "德芙心语礼盒 79g",
+      url: "https://item.jd.com/100176580516.html",
+      itemId: "100176580516"
+    },
     packs: [
       {
         cardTitle: "少了一块，是我试过",
@@ -374,6 +452,13 @@ const GIFTS = [
     moods: ["普通的一天", "需要鼓励", "想念 TA"],
     icon: "📓",
     tease: "封面还平得不像用过",
+    shop: {
+      platform: "jd",
+      shopName: "Paperideas旗舰店",
+      productTitle: "Paperideas 48k 空白手账",
+      url: "https://item.jd.com/10137475312894.html",
+      itemId: "10137475312894"
+    },
     packs: [
       {
         cardTitle: "第一页是我写的，可以撕",
@@ -382,8 +467,8 @@ const GIFTS = [
         style: "温柔"
       },
       {
-        cardTitle: "格子不算太密",
-        message: "我选了格子稍微疏一点的，怕太密会让人觉得每一天都要被填满。它不是考勤。你可以连续三天什么都不写，第四天写一句「今天风很大」。这就已经是一本被使用过的本子了。使用过，比整齐更重要。",
+        cardTitle: "页是空白的，可以随便写",
+        message: "我选了空白页，没有格子催着你把每一天填满。它不是考勤。你可以连续三天什么都不写，第四天写一句「今天风很大」。这就已经是一本被使用过的本子了。使用过，比整齐更重要。",
         note: null,
         style: "克制"
       },
@@ -404,6 +489,12 @@ const GIFTS = [
     moods: ["想被关心", "普通的一天", "需要鼓励", "想念 TA"],
     icon: "🧶",
     tease: "盒子比想象中更软",
+    shop: {
+      platform: "jd",
+      productTitle: "眠度法兰绒午睡小毯子 120×200cm",
+      url: "https://item.jd.com/49677576724.html",
+      itemId: "49677576724"
+    },
     packs: [
       {
         cardTitle: "先盖住膝盖那一段",
@@ -434,6 +525,12 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励"],
     icon: "🕯️",
     tease: "有一点点香味跑出来",
+    shop: {
+      platform: "jd",
+      productTitle: "舒居英国梨小苍兰香薰杯蜡",
+      url: "https://item.jd.com/100012756784.html",
+      itemId: "100012756784"
+    },
     packs: [
       {
         cardTitle: "灯芯我先试过",
@@ -464,6 +561,12 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励", "想去约会"],
     icon: "☂️",
     tease: "长长的，差点以为是包装管",
+    shop: {
+      platform: "pdd",
+      productTitle: "反向环扣全自动晴雨折叠伞",
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=944531388351",
+      itemId: "944531388351"
+    },
     packs: [
       {
         cardTitle: "骨架比看起来结实",
@@ -494,6 +597,13 @@ const GIFTS = [
     moods: ["想念 TA", "普通的一天", "想要惊喜"],
     icon: "🖼️",
     tease: "比盒子更方",
+    shop: {
+      platform: "jd",
+      shopName: "世纪开元",
+      productTitle: "世纪开元实木相框摆台 A4 胡桃木色",
+      url: "https://item.jd.com/100311469938.html",
+      itemId: "100311469938"
+    },
     packs: [
       {
         cardTitle: "玻璃里面先空着",
@@ -524,6 +634,13 @@ const GIFTS = [
     moods: ["想要惊喜", "普通的一天", "想念 TA", "需要鼓励", "想庆祝"],
     icon: "🌌",
     tease: "里面好像还在转",
+    shop: {
+      platform: "jd",
+      shopName: "万火旗舰店",
+      productTitle: "万火星空投影灯",
+      url: "https://item.jd.com/10212679684220.html",
+      itemId: "10212679684220"
+    },
     packs: [
       {
         cardTitle: "先把天花板借出去",
@@ -554,6 +671,13 @@ const GIFTS = [
     moods: ["想要惊喜", "普通的一天", "想念 TA", "想去约会", "想庆祝"],
     icon: "🧴",
     tease: "盖子还没打开就闻到了",
+    shop: {
+      platform: "jd",
+      shopName: "黑爪",
+      productTitle: "黑爪栀子花淡香水 30ml",
+      url: "https://item.jd.com/100133257276.html",
+      itemId: "100133257276"
+    },
     packs: [
       {
         cardTitle: "我先喷在自己手腕上",
@@ -584,6 +708,13 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励"],
     icon: "☕",
     tease: "盒子有点沉",
+    shop: {
+      platform: "jd",
+      shopName: "富光京东自营旗舰店",
+      productTitle: "富光马克杯 430ml",
+      url: "https://item.jd.com/100278203383.html",
+      itemId: "100278203383"
+    },
     packs: [
       {
         cardTitle: "手柄的位置我比过",
@@ -614,6 +745,12 @@ const GIFTS = [
     moods: ["想要惊喜", "普通的一天", "想去约会", "想庆祝"],
     icon: "✨",
     tease: "像一板还没揭开的东西",
+    shop: {
+      platform: "pdd",
+      productTitle: "130张雨雾小猫手账防水贴纸",
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=842631512597",
+      itemId: "842631512597"
+    },
     packs: [
       {
         cardTitle: "第一枚揭给我看",
@@ -644,6 +781,12 @@ const GIFTS = [
     moods: ["想要惊喜", "想念 TA", "普通的一天", "想庆祝"],
     icon: "🎼",
     tease: "摇了一下，里面会轻轻响",
+    shop: {
+      platform: "jd",
+      productTitle: "飞歌15音手摇木质音乐盒 胡桃木带镜",
+      url: "https://item.jd.com/29636271662.html",
+      itemId: "29636271662"
+    },
     packs: [
       {
         cardTitle: "开头那一拍是慢的",
@@ -674,6 +817,12 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "需要鼓励"],
     icon: "🌱",
     tease: "有泥土的味道，很淡",
+    shop: {
+      platform: "jd",
+      productTitle: "绿萝盆栽 1盆原盆原土",
+      url: "https://item.jd.com/10163686297777.html",
+      itemId: "10163686297777"
+    },
     packs: [
       {
         cardTitle: "在我窗台待过两周",
@@ -704,6 +853,12 @@ const GIFTS = [
     moods: ["普通的一天", "需要鼓励", "想念 TA"],
     icon: "🔖",
     tease: "夹在纸缝里的一条",
+    shop: {
+      platform: "pdd",
+      productTitle: "透光金属羽毛书签",
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=856425166586",
+      itemId: "856425166586"
+    },
     packs: [
       {
         cardTitle: "我把它夹在第十七页",
@@ -734,6 +889,12 @@ const GIFTS = [
     moods: ["想被关心", "普通的一天", "需要鼓励", "想念 TA"],
     icon: "🔥",
     tease: "盒子比手心略宽",
+    shop: {
+      platform: "pdd",
+      productTitle: "分体磁吸式充电迷你暖手宝",
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=995575197613",
+      itemId: "995575197613"
+    },
     packs: [
       {
         cardTitle: "出发前我先捂过",
@@ -764,6 +925,13 @@ const GIFTS = [
     moods: ["普通的一天", "想被关心", "想要惊喜", "需要鼓励", "想庆祝"],
     icon: "🍪",
     tease: "有点沙沙的声音",
+    shop: {
+      platform: "jd",
+      shopName: "红帽子",
+      productTitle: "红帽子进口夹心饼干礼盒 20枚",
+      url: "https://item.jd.com/100211576598.html",
+      itemId: "100211576598"
+    },
     packs: [
       {
         cardTitle: "这个味道你说过可以",
@@ -794,6 +962,12 @@ const GIFTS = [
     moods: ["想念 TA", "普通的一天", "想要惊喜", "想庆祝"],
     icon: "🏞️",
     tease: "一叠，还没散开",
+    shop: {
+      platform: "jd",
+      productTitle: "永不停歇的蓝 风景明信片 30张盒装",
+      url: "https://item.jd.com/10214857438950.html",
+      itemId: "10214857438950"
+    },
     packs: [
       {
         cardTitle: "其中一张是我们站过的地方",
@@ -824,6 +998,13 @@ const GIFTS = [
     moods: ["想被关心", "普通的一天", "需要鼓励"],
     icon: "🥤",
     tease: "比杯子更深一点",
+    shop: {
+      platform: "jd",
+      shopName: "富光",
+      productTitle: "富光 316L 马克保温杯 420ml",
+      url: "https://item.jd.com/10041416178840.html",
+      itemId: "10041416178840"
+    },
     packs: [
       {
         cardTitle: "我先灌了八分",
@@ -854,6 +1035,13 @@ const GIFTS = [
     moods: ["普通的一天", "需要鼓励", "想要惊喜", "想去约会", "想庆祝"],
     icon: "🎨",
     tease: "可以听到纸页摩挲",
+    shop: {
+      platform: "jd",
+      shopName: "晨光文具",
+      productTitle: "晨光 8K 上翻素描速写本 50张",
+      url: "https://item.jd.com/100187935798.html",
+      itemId: "100187935798"
+    },
     packs: [
       {
         cardTitle: "第一页被我画砸了",
@@ -884,6 +1072,7 @@ const GIFTS = [
     moods: ["想念 TA", "想要惊喜", "想去约会", "需要鼓励", "想庆祝", "普通的一天"],
     icon: "🎵",
     tease: "像一盒被贴过标签的东西",
+    shop: null,
     packs: [
       {
         cardTitle: "第一首是天桥上漏出来的",
@@ -914,6 +1103,7 @@ const GIFTS = [
     moods: ["想要惊喜", "想庆祝", "想被关心", "普通的一天", "需要鼓励"],
     icon: "📓",
     tease: "比想象中更轻",
+    shop: null,
     packs: [
       {
         cardTitle: "每一页都是我欠你的",
@@ -944,6 +1134,7 @@ const GIFTS = [
     moods: ["想去约会", "想要惊喜", "想念 TA", "普通的一天"],
     icon: "🌙",
     tease: "还以为是超市小票",
+    shop: null,
     packs: [
       {
         cardTitle: "今夜去不成，票还有效",
@@ -974,6 +1165,7 @@ const GIFTS = [
     moods: ["想念 TA", "想要惊喜", "想去约会", "普通的一天"],
     icon: "🌸",
     tease: "几乎没有重量",
+    shop: null,
     packs: [
       {
         cardTitle: "是那天下过雨的路边",
@@ -1004,6 +1196,7 @@ const GIFTS = [
     moods: ["想去约会", "想要惊喜", "普通的一天", "想念 TA"],
     icon: "🚌",
     tease: "夹在盒缝里的一张",
+    shop: null,
     packs: [
       {
         cardTitle: "终点栏我故意空着",
@@ -1034,6 +1227,7 @@ const GIFTS = [
     moods: ["想要惊喜", "想念 TA", "想庆祝", "需要鼓励", "普通的一天"],
     icon: "🖼️",
     tease: "等等，有一张纸歪着",
+    shop: null,
     packs: [
       {
         cardTitle: "鼻子的位置我自己也知道",
@@ -1064,6 +1258,12 @@ const GIFTS = [
     moods: ["想去约会", "想要惊喜", "想庆祝", "想被关心", "普通的一天"],
     icon: "🍿",
     tease: "有点咯咯响",
+    shop: {
+      platform: "jd",
+      productTitle: "吉利火星微波炉爆米花 118g×5包",
+      url: "https://item.jd.com/10093249178251.html",
+      itemId: "10093249178251"
+    },
     packs: [
       {
         cardTitle: "片子由你，灯由我关",
@@ -1094,6 +1294,13 @@ const GIFTS = [
     moods: ["想要惊喜", "想庆祝", "想被关心", "普通的一天", "需要鼓励"],
     icon: "⭐",
     tease: "盒子里在轻轻滚动",
+    shop: {
+      platform: "jd",
+      shopName: "皓梵洁",
+      productTitle: "许愿星星瓶 含210张夜光星星纸",
+      url: "https://item.jd.com/10122613679386.html",
+      itemId: "10122613679386"
+    },
     packs: [
       {
         cardTitle: "摇一下会有很细的声音",
@@ -1124,6 +1331,7 @@ const GIFTS = [
     moods: ["想去约会", "想念 TA", "普通的一天", "想要惊喜"],
     icon: "🗺️",
     tease: "折痕先露出来了",
+    shop: null,
     packs: [
       {
         cardTitle: "那家面馆的位置最准确",
@@ -1154,6 +1362,7 @@ const GIFTS = [
     moods: ["想被关心", "想去约会", "想庆祝", "普通的一天", "想念 TA"],
     icon: "🍳",
     tease: "有一点点油的味道",
+    shop: null,
     packs: [
       {
         cardTitle: "油渍不是不小心",
@@ -1184,6 +1393,7 @@ const GIFTS = [
     moods: ["想念 TA", "想要惊喜", "想庆祝", "需要鼓励", "普通的一天"],
     icon: "🕊️",
     tease: "角落里蹲着什么",
+    shop: null,
     packs: [
       {
         cardTitle: "左翅我折了两次",
@@ -1214,6 +1424,7 @@ const GIFTS = [
     moods: ["想去约会", "想念 TA", "想要惊喜", "想庆祝", "普通的一天"],
     icon: "🎟️",
     tease: "两张纸叠在一起",
+    shop: null,
     packs: [
       {
         cardTitle: "日期是对的，场次是错的",
@@ -1234,7 +1445,81 @@ const GIFTS = [
         style: "直接"
       }
     ]
-  }
+  },
+
+  {
+    id: "hand_cream",
+    name: "一支盖子上还有指印的护手霜",
+    category: "护理",
+    themes: ["关心", "日常"],
+    moods: ["普通的一天", "想被关心", "需要鼓励", "想念 TA"],
+    icon: "🧴",
+    tease: "圆筒，比笔略粗",
+    shop: {
+      platform: "jd",
+      shopName: "馥珮个人护理京东自营旗舰店",
+      productTitle: "馥珮绵羊油护手霜",
+      url: "https://item.jd.com/100119259854.html",
+      itemId: "100119259854"
+    },
+    packs: [
+      {
+        cardTitle: "盖子我先拧开过",
+        message: "冬天你在口袋里搓手的时候我看见了。这支不是一套仪式，就是普通的护手霜。我先拧开闻过，味道不冲，抹开以后也不会一直黏在键盘上。放在包的夹层，或放在洗手台右边。手背发紧的时候挤一点，挤完把盖子拧紧，别让它在包里自己开口。",
+        note: "第一次挤如果太硬，在手心里捂一下。",
+        style: "温柔"
+      },
+      {
+        cardTitle: "我先开盖确认过",
+        message: "我先开过盖，确认味道不冲、抹开也不那么油。只用了一点点。剩下的都是你的。它不会提醒你要爱惜双手，只会在你想起来的时候正好还在。用到见底也可以，见底说明它跟过你一阵。",
+        note: null,
+        style: "克制"
+      },
+      {
+        cardTitle: "出门前抹一次就够",
+        message: "不用当功课。洗完手，或刚进门坐下，抹一次就行。味道很淡，坐在旁边的人未必闻得见，你自己会知道手心不那么干了。这种知道很私人，我只是把一支能做到这件事的东西交到你手里。",
+        note: "如果要放进小袋子，让盖子朝上。倒过来隔夜，容易在口沿结一层。",
+        style: "直接"
+      }
+    ]
+  },
+
+  {
+    id: "eye_mask",
+    name: "一副只挡住灯光的眼罩",
+    category: "居家",
+    themes: ["关心", "日常", "鼓励"],
+    moods: ["普通的一天", "想被关心", "需要鼓励", "想念 TA"],
+    icon: "🌙",
+    tease: "软软的，像一块叠好的布",
+    shop: {
+      platform: "pdd",
+      productTitle: "薄款遮光挂耳眼罩",
+      url: "https://mobile.yangkeduo.com/goods.html?goods_id=588074709086",
+      itemId: "588074709086"
+    },
+    packs: [
+      {
+        cardTitle: "灯关不干净的时候用它",
+        message: "有时候窗帘留一条缝，走廊的灯也会从门底下钻进来。这副眼罩不解决全部问题，只负责把正对眼睛的那一块挡住。带子我调过，调到不勒耳朵的程度。戴上以后如果还能看见一点光，就把两侧再压一压，它会服帖一点。",
+        note: "白天用完请摊开，别一直团在枕头下面。",
+        style: "温柔"
+      },
+      {
+        cardTitle: "午睡也可以戴",
+        message: "不一定非要等到夜里。下午那二十分钟，如果房间亮得睡不下去，就把它拿出来。它很轻，摘下来以后头发也不会乱成一堆。用完折两次，放回原来的位置。下次伸手就能摸到。",
+        note: null,
+        style: "克制"
+      },
+      {
+        cardTitle: "我先戴过一晚",
+        message: "怕它会滑、会压到睫毛，所以我先试了一晚。没有滑到枕头底下，醒来时还在原处。于是放心交给你。它不会让夜晚变长，只会让灯光少来打搅。少打搅的那几个小时，留给你自己。",
+        note: "松紧如果还偏紧，把侧边的扣再放一格。别硬撑。",
+        style: "直接"
+      }
+    ]
+  },
+
 ];
 
 const MOODS = [
@@ -1249,12 +1534,12 @@ const MOODS = [
 
 // 心情到礼物的映射（与各礼物 moods 保持同步）
 const MOOD_MAP = {
-  "普通的一天": ["scarf", "flowers", "movie_ticket", "hot_cocoa", "letter", "book", "tea", "headphones", "night_light", "postcard", "keychain", "chocolate", "journal", "blanket", "candle", "umbrella", "photo_frame", "star_projector", "perfume", "mug", "stickers", "music_box", "plant", "bookmark", "hand_warmer", "snacks", "postcard_set", "thermos", "sketchbook", "playlist", "iou_book", "midnight_pass", "pressed_flower", "bus_ticket", "bad_drawing", "movie_night", "star_jar", "neighborhood_map", "recipe_card", "paper_crane", "ticket_stubs"],
-  "想被关心": ["scarf", "flowers", "hot_cocoa", "letter", "book", "tea", "night_light", "keychain", "chocolate", "blanket", "candle", "umbrella", "mug", "plant", "hand_warmer", "snacks", "thermos", "iou_book", "movie_night", "star_jar", "recipe_card"],
+  "普通的一天": ["scarf", "flowers", "movie_ticket", "hot_cocoa", "letter", "book", "tea", "headphones", "night_light", "postcard", "keychain", "chocolate", "journal", "blanket", "candle", "umbrella", "photo_frame", "star_projector", "perfume", "mug", "stickers", "music_box", "plant", "bookmark", "hand_warmer", "snacks", "postcard_set", "thermos", "sketchbook", "playlist", "iou_book", "midnight_pass", "pressed_flower", "bus_ticket", "bad_drawing", "movie_night", "star_jar", "neighborhood_map", "recipe_card", "paper_crane", "ticket_stubs", "hand_cream", "eye_mask"],
+  "想被关心": ["scarf", "flowers", "hot_cocoa", "letter", "book", "tea", "night_light", "keychain", "chocolate", "blanket", "candle", "umbrella", "mug", "plant", "hand_warmer", "snacks", "thermos", "iou_book", "movie_night", "star_jar", "recipe_card", "hand_cream", "eye_mask"],
   "想庆祝": ["flowers", "movie_ticket", "chocolate", "star_projector", "perfume", "stickers", "music_box", "snacks", "postcard_set", "sketchbook", "playlist", "iou_book", "bad_drawing", "movie_night", "star_jar", "recipe_card", "paper_crane", "ticket_stubs"],
   "想去约会": ["movie_ticket", "tea", "headphones", "postcard", "keychain", "umbrella", "perfume", "stickers", "sketchbook", "playlist", "midnight_pass", "pressed_flower", "bus_ticket", "movie_night", "neighborhood_map", "recipe_card", "ticket_stubs"],
-  "需要鼓励": ["scarf", "hot_cocoa", "letter", "book", "tea", "headphones", "night_light", "chocolate", "journal", "blanket", "candle", "umbrella", "star_projector", "mug", "plant", "bookmark", "hand_warmer", "snacks", "thermos", "sketchbook", "playlist", "iou_book", "bad_drawing", "star_jar", "paper_crane"],
-  "想念 TA": ["scarf", "flowers", "movie_ticket", "hot_cocoa", "letter", "book", "headphones", "night_light", "postcard", "keychain", "journal", "blanket", "photo_frame", "star_projector", "perfume", "music_box", "bookmark", "hand_warmer", "postcard_set", "playlist", "midnight_pass", "pressed_flower", "bus_ticket", "bad_drawing", "neighborhood_map", "recipe_card", "paper_crane", "ticket_stubs"],
+  "需要鼓励": ["scarf", "hot_cocoa", "letter", "book", "tea", "headphones", "night_light", "chocolate", "journal", "blanket", "candle", "umbrella", "star_projector", "mug", "plant", "bookmark", "hand_warmer", "snacks", "thermos", "sketchbook", "playlist", "iou_book", "bad_drawing", "star_jar", "paper_crane", "hand_cream", "eye_mask"],
+  "想念 TA": ["scarf", "flowers", "movie_ticket", "hot_cocoa", "letter", "book", "headphones", "night_light", "postcard", "keychain", "journal", "blanket", "photo_frame", "star_projector", "perfume", "music_box", "bookmark", "hand_warmer", "postcard_set", "playlist", "midnight_pass", "pressed_flower", "bus_ticket", "bad_drawing", "neighborhood_map", "recipe_card", "paper_crane", "ticket_stubs", "hand_cream", "eye_mask"],
   "想要惊喜": ["flowers", "movie_ticket", "headphones", "postcard", "keychain", "chocolate", "photo_frame", "star_projector", "perfume", "stickers", "music_box", "snacks", "postcard_set", "sketchbook", "playlist", "iou_book", "midnight_pass", "pressed_flower", "bus_ticket", "bad_drawing", "movie_night", "star_jar", "neighborhood_map", "paper_crane", "ticket_stubs"]
 };
 
