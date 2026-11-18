@@ -910,7 +910,7 @@ body.modal-open { overflow: hidden; }
   cursor: pointer;
 }
 .unbox-from { color: var(--gold-soft); font-size: 15px; letter-spacing: 0.08em; margin-bottom: 28px; opacity: 0.85; }
-.unbox-hint { color: var(--text-muted); font-size: 14px; min-height: 22px; }
+.unbox-hint { color: var(--text-muted); font-size: 14px; min-height: 22px; text-align: center; max-width: 16em; margin: 0 auto; padding: 0 16px; }
 .unbox-stage {
   width: 240px; height: 240px;
   border: none; background: none; padding: 0;

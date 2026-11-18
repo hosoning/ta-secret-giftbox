@@ -43,8 +43,21 @@ const GIFT_ICONS = {
   postcard_set: '<rect x="6" y="7" width="15" height="11" rx="1.5"/><path d="M3 15V5.5A1.5 1.5 0 0 1 4.5 4H17"/><path d="m8.5 16 3-3.5 2 2 1.5-1.5 3 3"/><circle cx="17" cy="10" r="1"/>',
   thermos: '<rect x="7" y="7" width="10" height="14" rx="2.5"/><path d="M8.5 7V4.5a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1V7"/><path d="M7 11h10"/>',
   alarm: '<circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5"/><path d="M4 5.5 6.5 3M20 5.5 17.5 3M7 19.5l-1.5 1.5M17 19.5l1.5 1.5"/>',
-  sketchbook: '<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.5-1.3-1.8-1.3-3 0-1 .8-1.8 1.8-1.8h2.2a4 4 0 0 0 4-4C20.5 6.6 16.7 3.5 12 3.5z"/><path d="M7.5 11h.01M9.5 7.5h.01M14 7h.01M17 10h.01"/>'
+  sketchbook: '<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.5-1.3-1.8-1.3-3 0-1 .8-1.8 1.8-1.8h2.2a4 4 0 0 0 4-4C20.5 6.6 16.7 3.5 12 3.5z"/><path d="M7.5 11h.01M9.5 7.5h.01M14 7h.01M17 10h.01"/>',
+  playlist: '<rect x="3" y="8" width="18" height="10.5" rx="1.5"/><circle cx="8.2" cy="13.2" r="2"/><circle cx="15.8" cy="13.2" r="2"/><path d="M10.2 13.2h3.6"/><path d="M9 4.5l6 1.8v3"/><circle cx="8.2" cy="13.2" r=".6"/><circle cx="15.8" cy="13.2" r=".6"/>',
+  iou_book: '<rect x="6" y="3.5" width="13" height="17" rx="1.2"/><path d="M9 8h7M9 11.5h7M9 15h4.5"/><path d="M4.5 7h3.5M4.5 12h3.5M4.5 17h3.5"/>',
+  midnight_pass: '<rect x="3.5" y="8" width="17" height="10" rx="1.2"/><path d="M8 8v10"/><path d="M15.8 11.4a2.5 2.5 0 1 1-2.2 3.6 2 2 0 0 0 2.2-3.6z"/><path d="M3.5 13h1.2M19.3 13h1.2"/>',
+  pressed_flower: '<rect x="5" y="3.5" width="14" height="17" rx="1"/><circle cx="12" cy="11" r="2.1"/><circle cx="9.6" cy="9.8" r="1.6"/><circle cx="14.4" cy="9.8" r="1.6"/><circle cx="12" cy="8.2" r="1.6"/><path d="M12 13v5M10.5 16.5 12 15l1.5 1.5"/>',
+  bus_ticket: '<rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M8 6v12"/><path d="M11.5 9.5h6l1 3H11.5z"/><path d="M12.8 12.5v1.6M16.6 12.5v1.6"/><circle cx="13.2" cy="15.2" r=".8"/><circle cx="16.2" cy="15.2" r=".8"/><path d="M5.3 10h1.2M5.3 14h1.2"/>',
+  bad_drawing: '<rect x="4" y="3.5" width="16" height="17" rx="1"/><circle cx="12.3" cy="11" r="3.6"/><path d="M10.2 10.2h.01M14.4 10.6h.01"/><path d="M10.3 13.2c.9.9 2.4.5 3.2-.3"/><path d="M6.5 5.5 8.5 7M17.2 6.2 15.5 8"/><path d="M8 18.5c1.5-1 3-.6 4 .4"/>',
+  movie_night: '<rect x="3.5" y="5" width="17" height="11" rx="1.2"/><path d="M8 20h8M12 16v4"/><path d="M7.5 14.5 8.5 9h7l1 5.5z"/><path d="M9.2 9v5.5M12 9v5.5M14.8 9v5.5"/>',
+  star_jar: '<path d="M8 8.5h8l-.9 11.2H8.9z"/><path d="M8 8.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M12 11.2l.55 1.15 1.25.18-1 .9.24 1.25L12 14.1l-1.04.58.24-1.25-1-.9 1.25-.18z"/><path d="M9.8 16.2l.35.7.75.1-.6.55.15.75-.65-.35-.65.35.15-.75-.6-.55.75-.1z"/>',
+  neighborhood_map: '<path d="M4 6.5h16v12H4z"/><path d="M12 6.5v12M4 12h16"/><path d="M7 9h3M15 15h3"/><circle cx="16" cy="9.2" r="1.4"/><path d="M16 10.6v2.6M15.2 13.2 16 14.4l.8-1.2"/>',
+  recipe_card: '<rect x="4.5" y="4" width="15" height="16.5" rx="1.2"/><path d="M7 8h10M7 11.2h10M7 14.4h6"/><path d="M16.2 15.2c1.2 0 2 .8 2 1.6 0 1.2-1.5 2.2-2 2.2s-2-1-2-2.2c0-.8.8-1.6 2-1.6z"/><path d="M16.2 15.2V13"/>',
+  paper_crane: '<path d="M3 12.5 10.5 14 12.2 6.5 14 12.2 21 8.5 16.2 16.2 11.5 16.8 8.2 20.5"/><path d="M10.5 14 13 12.2M12.2 6.5 15 9.2"/>',
+  ticket_stubs: '<path d="M3.5 5.5h12.5v7.5H3.5z"/><path d="M7.2 5.5v7.5"/><path d="M8 11.2h12.5v7.5H8z"/><path d="M12 11.2v7.5"/><path d="M5.2 9.2h.8M14.2 9.2h.8M10 15h.8M18.8 15h.8"/>'
 };
+
 
 const UI_ICONS = {
   gift: '<rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v7.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V12M12 8v12.5"/><path d="M12 8C10.5 5 7 4.5 7 6.5S10 8 12 8zM12 8c1.5-3 5-3.5 5-1.5S14 8 12 8z"/>',

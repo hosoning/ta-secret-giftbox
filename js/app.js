@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '1.1.0';
+  const APP_VERSION = '1.2.0';
 
   // ---------- 状态 ----------
   const state = {
@@ -300,18 +300,35 @@
     stage.disabled = true;
     GiftSound.unlock();
     const fast = state.reduceMotion;
-    const T = fast ? [0, 60, 120, 500] : [0, 520, 900, 2100];
+    const gift = state.currentGift.gift;
+    const pack = state.currentGift.pack || {};
+    const tease = (!fast && (pack.tease || gift.tease)) || '';
+
+    // 减少动态时跳过预告语，直接出真名；完整动画会在「正在拆开……」后短暂显示 tease
+    const T = fast ? [0, 60, 120, 500] : (tease ? [0, 520, 900, 1750, 2950] : [0, 520, 900, 2100]);
 
     $('#unbox-hint').textContent = '正在拆开……';
     stage.classList.add('untie');
     GiftSound.untie();
     unboxTimers.push(setTimeout(() => { stage.classList.add('opened'); GiftSound.open(); }, T[1]));
-    unboxTimers.push(setTimeout(() => {
-      stage.classList.add('revealed');
-      GiftSound.reveal();
-      $('#unbox-hint').textContent = state.currentGift.gift.name;
-    }, T[2]));
-    unboxTimers.push(setTimeout(() => showReveal(), T[3]));
+    if (tease) {
+      unboxTimers.push(setTimeout(() => {
+        $('#unbox-hint').textContent = tease;
+      }, T[2]));
+      unboxTimers.push(setTimeout(() => {
+        stage.classList.add('revealed');
+        GiftSound.reveal();
+        $('#unbox-hint').textContent = gift.name;
+      }, T[3]));
+      unboxTimers.push(setTimeout(() => showReveal(), T[4]));
+    } else {
+      unboxTimers.push(setTimeout(() => {
+        stage.classList.add('revealed');
+        GiftSound.reveal();
+        $('#unbox-hint').textContent = gift.name;
+      }, T[2]));
+      unboxTimers.push(setTimeout(() => showReveal(), T[3]));
+    }
   }
 
   function skipUnbox() {
