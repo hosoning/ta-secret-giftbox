@@ -108,7 +108,9 @@ function getPrefs() {
 }
 
 function setPrefs(prefs) {
-  localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+  try {
+    localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+  } catch (e) { /* 存储不可用（如部分无痕模式）时忽略 */ }
 }
 
 function getRecentGiftIds(limit = 8) {
@@ -138,11 +140,56 @@ async function exportAll() {
   };
 }
 
+/** 校验并规范化一条导入的礼物记录，无效返回 null */
+function normalizeGiftRecord(g) {
+  if (!g || typeof g !== 'object') return null;
+  if (typeof g.id !== 'string' || !g.id) return null;
+  if (typeof g.giftName !== 'string' || !g.giftName) return null;
+  if (typeof g.message !== 'string' || !g.message) return null;
+  const ts = typeof g.timestamp === 'number' ? g.timestamp : Date.parse(g.timestamp);
+  if (!isFinite(ts)) return null;
+  const str = (v, max) => (v == null ? '' : String(v)).slice(0, max);
+  return {
+    id: str(g.id, 80),
+    timestamp: ts,
+    userName: str(g.userName, 24),
+    taName: str(g.taName, 24),
+    mood: str(g.mood, 20),
+    giftId: str(g.giftId, 40),
+    giftName: str(g.giftName, 60),
+    category: str(g.category, 20),
+    themes: Array.isArray(g.themes) ? g.themes.map(t => str(t, 20)).slice(0, 8) : [],
+    icon: str(g.icon, 8),
+    cardTitle: str(g.cardTitle, 80),
+    message: str(g.message, 4000),
+    note: g.note ? str(g.note, 400) : null,
+    style: str(g.style, 10),
+    favorited: !!g.favorited,
+    materialVersion: str(g.materialVersion || '1.0', 10)
+  };
+}
+
+/**
+ * 导入备份：逐条校验，返回 { added, updated, skipped }
+ * 名字等偏好仅在本机尚未设置时才使用备份中的值，避免覆盖当前设置。
+ */
 async function importData(data) {
-  if (!data || !Array.isArray(data.gifts)) throw new Error('无效的备份文件');
-  for (const g of data.gifts) {
+  const list = Array.isArray(data) ? data : (data && Array.isArray(data.gifts) ? data.gifts : null);
+  if (!list) throw new Error('无效的备份文件');
+  const existing = new Set((await getAllGifts()).map(g => g.id));
+  let added = 0, updated = 0, skipped = 0;
+  for (const raw of list) {
+    const g = normalizeGiftRecord(raw);
+    if (!g) { skipped++; continue; }
+    if (existing.has(g.id)) updated++; else added++;
     await saveGift(g);
   }
-  if (data.prefs) setPrefs(data.prefs);
-  return data.gifts.length;
+  if (!added && !updated) throw new Error('备份中没有有效记录');
+  if (data && data.prefs && typeof data.prefs === 'object') {
+    const prefs = getPrefs();
+    if (!prefs.userName && data.prefs.userName) prefs.userName = String(data.prefs.userName).slice(0, 12);
+    if (!prefs.taName && data.prefs.taName) prefs.taName = String(data.prefs.taName).slice(0, 12);
+    setPrefs(prefs);
+  }
+  return { added, updated, skipped };
 }

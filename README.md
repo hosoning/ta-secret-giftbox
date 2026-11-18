@@ -7,6 +7,7 @@
 - 简体中文 · 手机优先 · 无需注册 · 可独立部署出售
 - 所有第三人称统一使用「TA」
 - 静态站点，无后端、无账号、无内购
+- **PWA**：可「添加到主屏幕」像 App 一样打开，首次访问后断网也能完整使用
 
 ---
 
@@ -17,11 +18,13 @@
 | 封面 | 精美礼盒视觉 +「拆开 TA 为你准备的小惊喜」 |
 | 名字 | 填写双方名字，可修改，仅存本机 |
 | 心情 | 7 种场景/心情筛选礼物池 |
-| 拆礼 | 可跳过的拆丝带/开盖动画 |
+| 拆礼 | 解丝带 → 开盖 → 星光迸发的仪式动画，随时可「跳过动画」 |
+| 音效 | WebAudio 实时合成的轻柔拆礼音效（无音频文件），右上角一键静音并记住设置 |
 | 揭示 | 礼物图标 → 卡片标题 → 完整留言 → 可选小纸条（语义绑定） |
-| 陈列室 | IndexedDB 完整历史，搜索、收藏、删除、清空 |
+| 陈列室 | IndexedDB 完整历史，搜索（名称/标题/留言/小纸条/心情）、收藏与按心情筛选、删除、清空 |
 | 备份 | JSON 导出 / 导入恢复 |
-| 分享 | Canvas 生成可保存的分享图 |
+| 分享 | Canvas 生成 1080 宽高清分享图，预览后可长按保存 / 一键保存 / 系统分享 |
+| 图标 | 40 种礼物全部使用统一风格的线性 SVG 图标（`js/icons.js`），各品牌手机显示一致 |
 | 提示 | 明确本地存储风险与「数字象征性」声明 |
 
 ---
@@ -44,7 +47,9 @@
 - 纯静态：HTML + CSS + 原生 JavaScript
 - 存储：IndexedDB（礼物历史）+ localStorage（偏好与近期记录）
 - 无框架、无构建、无后端、无付费 AI
-- 可直接用任意静态服务器或双击 `index.html` 打开（部分浏览器对 file:// 下 IndexedDB 有限制，建议本地起服务）
+- Service Worker 离线缓存 + Web App Manifest（PWA）
+- WebAudio 合成音效，无外部音频、无外部字体，国内网络可直接访问
+- 可直接用任意静态服务器或双击 `index.html` 打开（部分浏览器对 file:// 下 IndexedDB 有限制、PWA 不生效，建议本地起服务）
 
 ---
 
@@ -71,9 +76,17 @@ python3 -m http.server 8080
 - GitHub Pages / Cloudflare Pages / Netlify / Vercel
 - 国内：对象存储静态网站、虚拟主机、自己的 Nginx
 
-只需上传整个目录，保证 `index.html` 为入口。无需 Node、无需环境变量。
+只需上传整个目录，保证 `index.html` 为入口。无需 Node、无需环境变量。所有路径均为相对路径，**放在子目录下也能正常运行**（例如 `https://用户名.github.io/ta-secret-giftbox/`）。
 
-内容与素材可独立更新：替换 `js/data.js` 或 `assets/` 后重新部署即可。
+> PWA（安装到桌面、离线缓存）要求 **HTTPS**（`localhost` 除外）。上述托管平台默认都提供 HTTPS。面向国内长期运营，建议使用国内服务器 / CDN 并完成 ICP 备案。
+
+### GitHub Pages（免费）
+
+1. 新建一个 GitHub 仓库，把本目录全部文件上传到仓库根目录
+2. 仓库 Settings → Pages → Source 选 `Deploy from a branch`，分支选 `main`、目录 `/ (root)`
+3. 等待 1～2 分钟，访问 `https://用户名.github.io/仓库名/`
+
+内容可独立更新：修改 `js/data.js` 后重新部署即可（记得同时更新 `sw.js` 版本号，见下方）。
 
 ---
 
@@ -110,20 +123,53 @@ python3 -m http.server 8080
 - [ ] 视觉为墨绿 × 柔金基调，拆礼有仪式感
 - [ ] 无注册、无付费墙、无概率诱导文案
 
+### PWA 与音效
+- [ ] 浏览器可「添加到主屏幕 / 安装」，桌面图标正确，打开为全屏
+- [ ] 打开过一次后，开启飞行模式仍可拆礼、查看陈列室
+- [ ] 发布新版本后，用户会看到「有新版本可用 · 更新」提示
+- [ ] 拆礼有轻柔音效；右上角静音后不再发声，刷新后仍保持静音
+- [ ] 手机返回键：关闭弹层 / 回到上一页，不会直接退出
+
+---
+
+## 买家自定义指南
+
+| 想改什么 | 改哪里 |
+|---|---|
+| 网站名称 | `index.html` 的 `<title>`、`apple-mobile-web-app-title`、封面标题；`manifest.webmanifest` 的 `name` / `short_name`；`js/app.js` 分享图标题（搜索「TA 的秘密礼盒」） |
+| 配色 | `css/style.css` 顶部 `:root` 变量；同时修改 `manifest.webmanifest` 与 `index.html` 中的 `theme-color` / `background_color` |
+| App 图标 | 替换 `icons/` 下同名 PNG（192、512、maskable 192/512、apple-touch-icon 180、favicon 64）。maskable 图标主体需在中心 80% 范围内 |
+| 礼物与留言 | `js/data.js`：在 `GIFTS` 中新增礼物（`id` 唯一），并把 id 加入 `MOOD_MAP` 对应心情或在礼物的 `moods` 中填写心情名 |
+| 礼物图标 | `js/icons.js` 的 `GIFT_ICONS`：以礼物 `id` 为键，填入 24×24 线性 SVG 路径；未配置时自动显示通用礼盒图标 |
+| 音效 | `js/sound.js`：`master.gain.value` 调整整体音量；不需要音效可删除 `index.html` 中的音效按钮 |
+| 声明文案 | `index.html` 封面与陈列室底部；`js/app.js` 分享图底部 |
+
+**⚠️ 每次修改任何文件后发布，务必把 `sw.js` 顶部的 `VERSION` 改大一号（例如 `1.1.0` → `1.1.1`）**，并同步修改 `js/app.js` 的 `APP_VERSION`。否则已访问过的用户会继续使用旧的离线缓存。新增文件时，请把路径加入 `sw.js` 的 `PRECACHE` 列表。
+
+### 数据说明
+
+- 礼物记录存放在浏览器 IndexedDB（库名 `TA_Secret_GiftBox`），名字、音效开关与近期礼物存放在 localStorage（`ta_giftbox_prefs`）。
+- 修改域名后，旧域名下的记录不会自动迁移，可提示用户先「导出备份」再到新域名「导入恢复」。
+- 导入时逐条校验，无效条目自动跳过，相同 id 的记录会被覆盖更新；备份中的名字只在本机尚未填写时才会使用。
+
 ---
 
 ## 目录结构
 
 ```
 ta-secret-giftbox/
-├── index.html          # 入口
+├── index.html            # 入口
+├── manifest.webmanifest  # PWA 安装信息（名称、颜色、图标）
+├── sw.js                 # Service Worker（离线缓存，含版本号）
 ├── css/
-│   └── style.css       # 主题与布局
+│   └── style.css         # 主题与布局
 ├── js/
-│   ├── data.js         # 40 礼物 × 3 内容包
-│   ├── db.js           # IndexedDB + 偏好
-│   └── app.js          # 主逻辑
-├── assets/             # 可放自定义插画（当前用 emoji）
+│   ├── data.js           # 40 礼物 × 3 内容包
+│   ├── icons.js          # 统一风格 SVG 图标（礼物 / 心情 / 界面）
+│   ├── sound.js          # WebAudio 拆礼音效
+│   ├── db.js             # IndexedDB + 偏好 + 导入校验
+│   └── app.js            # 主逻辑
+├── icons/                # App 图标（192/512、maskable、iOS、favicon）
 └── README.md
 ```
 
@@ -131,10 +177,16 @@ ta-secret-giftbox/
 
 ## 后续可扩展（非首版必须）
 
-- 替换 emoji 为统一风格 SVG / 插画
+- ~~替换 emoji 为统一风格 SVG~~（v1.1 已完成）
+- ~~拆礼音效~~（v1.1 已完成）
+- ~~PWA 支持离线与「添加到主屏幕」~~（v1.1 已完成）
 - 更多心情或季节限定内容包
-- 拆礼音效（需用户手势触发）
-- PWA 支持离线与「添加到主屏幕」
+- 为每种礼物绘制专属插画
+
+## 版本
+
+- v1.1.0 · 2026-11：PWA（离线 + 可安装 + 更新提示）、全部 emoji 换成统一 SVG 图标、重做拆礼动画（解丝带/开盖/星光）、WebAudio 音效与静音开关、高清分享图（可长按保存/系统分享）、陈列室按心情筛选与更完整的搜索、导入逐条校验、返回键支持、无障碍优化；修复「想庆祝」心情没有对应礼物（原先会随机给任意礼物）与文本注入问题
+- 首版 · 2026-11
 
 ---
 
